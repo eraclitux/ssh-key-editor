@@ -1,0 +1,16 @@
+body {
+  padding-top: 3.5rem;
+}
+
+.alert {
+  cursor: pointer;
+  display: none;
+}
+
+.pub-key-text {
+  display: none;
+}
+
+#main-form {
+  margin-top: 8px;
+}

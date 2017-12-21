@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>SSH keys bookkeper</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="./static/style.css">
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="top-btn navbar-brand" href="#">Top^</a>
+        <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#navbarsDefault" aria-controls="navbarsDefault" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarsDefault">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+            </li>
+          </ul>
+          <!--<form class="form-inline mt-2 mt-md-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+            <button class="search-btn btn btn-outline-success my-2 my-sm-0">Search</button>
+          </form>-->
+        </div>
+      </nav>
+    </header>
+    <div class="container">
+      <div class="row">
+        <div class="col-4">
+          <form id="main-form" action="/key" method="post">
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="useGithub" id="userProvided" value="false" checked>
+                Provide pubkey
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="useGithub" id="useGitHub" value="true">
+                Retrieve public key from GitHub
+                <small id="githubHelp" class="form-text text-muted">Retrieve key form Github using the ID as username</small>
+              </label>
+            </div>
+            <div class="form-group">
+              <label>Key ID</label>
+              <input type="text" class="form-control" id="key-input" name="keyID" placeholder="Insert key id">
+              <small id="idHelp" class="form-text text-muted">This will be added next to pubkey</small>
+            </div>
+            <div class="form-group" id="formPubKey">
+              <label for="formPubKey">Public key to add</label>
+              <textarea class="form-control" rows="3" name="pubKey"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add key</button>
+          </form>
+        </div>
+        <div class="col-8">
+          <h1>SSH keys for {{.Username}}@{{.Hostname}}</h1>
+          <div class="alert alert-primary" role="alert">
+            Info
+          </div>
+          <div class="alert alert-danger" role="alert">
+            Error
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Id</th>
+                  <th>Type</th>
+                  <th>Public key</th>
+                  <th>Last modified time</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{range $index, $element := .Keys}}
+                <tr id="row-{{$index}}">
+                  <td>{{$element.ID}}</td>
+                  <td>{{$element.Cipher}}</td>
+                  <td>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="show-btn btn btn-outline-secondary" data-toggle="modal" data-target="#pub-key-modal">
+                      <p class="pub-key-text">{{$element.PubKey}}</p>
+                      show
+                    </button>
+                  </td>
+                  <td>{{$element.Date}}</td>
+                  <td>
+                    <button type="button" class="update-btn btn btn-primary">Update</button>
+                    <button type="button" class="delete-btn btn btn-danger">Remove</button>
+                  </td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="pub-key-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Public key</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <textarea class="form-control" rows="9" readonly></textarea>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $(".show-btn").click(function() {
+          pubKey = this.children[0].innerText;
+          $(".modal-body textarea").val(pubKey);
+        });
+        $(".update-btn").click(function(e) {
+          keyID = this.parentNode.parentNode.children[0].innerText;
+          $("#key-input").val(keyID);
+          $("#key-input").focus();
+          // FIXME isn't focus enough?
+          $(window).scrollTop(0);
+        });
+        $(".delete-btn").click(function() {
+          rowID = this.parentNode.parentNode.id;
+          keyID = this.parentNode.parentNode.children[0].innerText;
+          $.ajax({
+              url: '/key',
+              type: 'PATCH',
+              data: {"rowID": rowID.split("row-")[1]},
+              success: function(result) {
+                location.reload();
+              },
+              error: function(result) {
+                $(".alert-danger")
+                  .text("Error deleting key")
+                  .show();
+              }
+          });
+        });
+        $(".top-btn").click(function(e) {
+          $(window).scrollTop(0);
+        });
+        $(".alert").click(function() {
+          $(this).hide();
+        });
+        // FIXME
+        $(".search-btn").click(function() {
+          term = this.parentNode.children[0].innerText;
+          console.log(term);
+        });
+        $("input[name=useGithub]").click(function(e) {
+          if (e.target.value === "true") {
+            $("#formPubKey").hide();
+            return;
+          };
+          $("#formPubKey").show();
+        });
+      });
+    </script>
+  </body>
+</html>
