@@ -7,17 +7,20 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/eraclitux/middle"
 )
 
 func main() {
 	homeHndlr := &homeHandler{}
 	homeHndlr.templateInit()
+	hasher := createHasher("secret")
 	//
 	// Routes
 	//
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	http.HandleFunc("/key", handleKey)
-	http.Handle("/", homeHndlr)
+	http.HandleFunc("/key", middle.MustAuth(hasher, http.HandlerFunc(handleKey)))
+	http.Handle("/", middle.MustAuth(hasher, homeHndlr))
 	// For security reasons this server,
 	// will only listen on localhost.
 	// FIXME parametrize port

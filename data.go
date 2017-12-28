@@ -11,10 +11,13 @@ import (
 	"os/user"
 	"strings"
 	"time"
+
+	"github.com/eraclitux/middle"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
-	keyFilePath = "/.test_ssh/authorized_keys"
+	keyFilePath = "/.ssh/authorized_keys"
 	gitHubURI   = "https://api.github.com/users"
 )
 
@@ -134,7 +137,7 @@ func appendKey(keyID, cipher, pubKey string) error {
 		return err
 	}
 	// FIXME parametrize key file
-	f, err := os.OpenFile(user.HomeDir+"/.test_ssh/authorized_keys", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(user.HomeDir+keyFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
@@ -145,4 +148,17 @@ func appendKey(keyID, cipher, pubKey string) error {
 		return err
 	}
 	return nil
+}
+
+type store struct {
+	H []byte
+}
+
+func (s *store) GetHash(u string) ([]byte, error) {
+	return s.H, nil
+}
+
+func createHasher(p string) middle.Hasher {
+	h, _ := bcrypt.GenerateFromPassword([]byte(p), bcrypt.DefaultCost)
+	return &store{H: h}
 }
