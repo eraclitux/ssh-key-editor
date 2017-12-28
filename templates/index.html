@@ -88,7 +88,6 @@
                   </td>
                   <td>{{$element.Date}}</td>
                   <td>
-                    <button type="button" class="update-btn btn btn-primary">Update</button>
                     <button type="button" class="delete-btn btn btn-danger">Remove</button>
                   </td>
                 </tr>
@@ -127,13 +126,6 @@
         $(".show-btn").click(function() {
           pubKey = this.children[0].innerText;
           $(".modal-body textarea").val(pubKey);
-        });
-        $(".update-btn").click(function(e) {
-          keyID = this.parentNode.parentNode.children[0].innerText;
-          $("#key-input").val(keyID);
-          $("#key-input").focus();
-          // FIXME isn't focus enough?
-          $(window).scrollTop(0);
         });
         $(".delete-btn").click(function() {
           rowID = this.parentNode.parentNode.id;
