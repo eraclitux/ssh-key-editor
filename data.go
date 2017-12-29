@@ -48,9 +48,20 @@ func parseLine(l string) key {
 			Date:   fields[3],
 		}
 	case 3:
-		// FIXME
+		k = key{
+			Cipher: fields[0],
+			PubKey: fields[1],
+			ID:     fields[2],
+		}
 	case 2:
-		// FIXME
+		k = key{
+			Cipher: fields[0],
+			PubKey: fields[1],
+		}
+	case 1:
+		k = key{
+			PubKey: fields[0],
+		}
 	}
 	return k
 }
