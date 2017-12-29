@@ -1,0 +1,19 @@
+sudo: required
+
+language: go
+go:
+  - master
+
+services:
+  - docker
+
+install:
+  - docker pull eraclitux/go-mini-container
+
+script:
+  - docker run --rm -v "$PWD":/usr/src/eraclitux/ssh-key-editor -w /usr/src/eraclitux/ssh-key-editor eraclitux/go-mini-container sh -c "go get -v -d ./... && CC=$(which gcc) go build -v --ldflags '-w -linkmode external -extldflags \"-static\"' -o  ssh-key-editor"
+  - docker build -t $TRAVIS_REPO_SLUG .;
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
+    docker push $TRAVIS_REPO_SLUG;
+    fi

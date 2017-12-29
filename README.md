@@ -1,6 +1,8 @@
 ssh-key-editor
 ==============
 
+[![Build Status](https://travis-ci.org/eraclitux/ssh-key-editor.svg?branch=master)](https://travis-ci.org/eraclitux/ssh-key-editor)
+
 Simple, easy to install and use web based ssh keys editor.
 
 This tools has born to ease the task of managing multiple keys on bastion hosts.
