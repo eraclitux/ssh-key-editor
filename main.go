@@ -24,8 +24,8 @@ func main() {
 	// Routes
 	//
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	http.HandleFunc("/key", middle.MustAuth(hasher, http.HandlerFunc(handleKey)))
-	http.Handle("/", middle.MustAuth(hasher, homeHndlr))
+	http.HandleFunc("/key", middle.Auth(hasher, http.HandlerFunc(handleKey)))
+	http.Handle("/", middle.Auth(hasher, homeHndlr))
 	addr := fmt.Sprintf("%s:%s", os.Getenv("LISTENING_ADDRESS"), os.Getenv("LISTENING_PORT"))
 	httpServer := &http.Server{
 		Addr: addr,
