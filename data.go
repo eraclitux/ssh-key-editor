@@ -166,14 +166,24 @@ func appendKey(keyID, cipher, pubKey string) error {
 }
 
 type store struct {
-	H []byte
+	hash     []byte
+	username string
 }
 
-func (s *store) GetHash(u string) ([]byte, error) {
-	return s.H, nil
+func (s *store) Verify(u, p string) bool {
+	if u != s.username {
+		return false
+	}
+	if err := bcrypt.CompareHashAndPassword(s.hash, []byte(p)); err != nil {
+		return false
+	}
+	return true
 }
 
-func createHasher(p string) middle.Hasher {
-	h, _ := bcrypt.GenerateFromPassword([]byte(p), bcrypt.DefaultCost)
-	return &store{H: h}
+func makeAuthorizer(user, passwd string) (middle.Authorizer, error) {
+	h, err := bcrypt.GenerateFromPassword([]byte(passwd), bcrypt.DefaultCost)
+	if err != nil {
+		return &store{}, err
+	}
+	return &store{hash: h, username: user}, err
 }

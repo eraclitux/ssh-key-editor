@@ -19,7 +19,10 @@ import (
 func main() {
 	homeHndlr := &homeHandler{}
 	homeHndlr.templateInit()
-	hasher := createHasher(os.Getenv("HTTP_PASSWORD"))
+	hasher, err := makeAuthorizer(os.Getenv("HTTP_USER"), os.Getenv("HTTP_PASSWORD"))
+	if err != nil {
+		log.Fatalln(err)
+	}
 	infoLogger := log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime)
 	//
 	// Routes
@@ -39,7 +42,7 @@ func main() {
 		httpServer.Shutdown(context.Background())
 		shutDownCh <- struct{}{}
 	}()
-	err := httpServer.ListenAndServe()
+	err = httpServer.ListenAndServe()
 	if err != nil {
 		log.Println(err)
 		// In case error has not been
