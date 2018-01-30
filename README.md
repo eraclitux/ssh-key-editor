@@ -2,6 +2,7 @@ ssh-key-editor
 ==============
 
 [![Build Status](https://travis-ci.org/eraclitux/ssh-key-editor.svg?branch=master)](https://travis-ci.org/eraclitux/ssh-key-editor)
+[![](https://images.microbadger.com/badges/image/eraclitux/ssh-key-editor.svg)](https://hub.docker.com/r/eraclitux/ssh-key-editor/)
 
 Simple, easy to install and use web based ssh keys editor.
 
@@ -46,3 +47,8 @@ Misconfiguration of this tool leads to **serious security issues** as unauthoriz
 Never bind on public interfaces, if risk can be taken use an http reverse proxy with proper TLS termination to access from the internet otherwise basic auth credentials could be easily sniffed.
 
 Always follow SSH good practices, disable access for `root` and always mount a normal (at most sudoer) user's `.ssh` with `-v`.
+
+Notes
+=====
+
+The small Docker image (~5MB compressed) has been created with [go-mini-container](https://github.com/eraclitux/go-mini-container).
